@@ -10,5 +10,5 @@ const checkStatus = response => {
     return Promise.reject(error);
 }
 export const getAllStudents = () =>
-    fetch("http://localhost:8083/api/v1/students")
+    fetch("api/v1/students")
         .then(checkStatus)
