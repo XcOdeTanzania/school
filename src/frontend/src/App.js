@@ -1,13 +1,14 @@
 import './App.css';
 import {getAllStudents} from "./client";
 import {useState, useEffect} from "react";
-import {Layout, Menu, Breadcrumb, Table} from 'antd';
+import {Layout, Menu, Breadcrumb, Table, Spin, Empty} from 'antd';
 import {
     DesktopOutlined,
     PieChartOutlined,
     FileOutlined,
     TeamOutlined,
     UserOutlined,
+
 } from '@ant-design/icons';
 
 const {Header, Content, Footer, Sider} = Layout;
@@ -39,10 +40,15 @@ const columns = [
 function App() {
     const [students, setStudents] = useState([]);
     const [collapsed, setCollapsed] = useState(false);
+     const [fetching, setFetching] = useState(true);
 
     const fetchStudents = () => getAllStudents()
         .then(resp => resp.json())
-        .then(data => setStudents(data));
+        .then(data => {
+            setStudents(data)
+            setFetching(false);
+
+        });
 
     useEffect(() => {
         console.log("Invoke only on mount");
@@ -50,12 +56,19 @@ function App() {
     }, []);
 
     const renderStudents =  () => {
+        if(fetching){
+            return <Spin />;
+        }
         if (students.length <= 0) {
-            return "no data available";
+            return <Empty/>;
         }
         return <Table
             dataSource={students}
             columns={columns}
+            title={() => 'Students'}
+            pagination={{pageSize:50}}
+            scroll={{y:240}}
+            rowKey={(student)=>student.id}
         />;
     }
 
